@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {fetchAppointments} from "./mockData.ts";
+import {fetchAppointments} from "./mock-data.ts";
 import type {Appointment} from "./api.ts";
 
 export function useAppointments() {

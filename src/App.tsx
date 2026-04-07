@@ -1,15 +1,15 @@
-import {useAppointments} from "./api/useAppointments.ts";
+import {useAppointments} from "./api/use-appointments.ts";
+import {Week} from "./components/week/week.tsx";
+import {WeekSkeleton} from "./components/week/week-skeleton.tsx";
 
-function App() {
-    const {appointments, loading, error} = useAppointments()
+const App = () => {
+    const {appointments, loading} = useAppointments()
 
-    return (
-        <>
-            {appointments.length > 0 && (appointments.map((appointment) => <div>
-                {appointment.date}
-            </div>))}
-        </>
-    )
+    if (loading) {
+        return <WeekSkeleton/>
+    }
+
+    return <Week appointments={appointments} weekStart={new Date(appointments[0].date)}/>
 }
 
 export default App
