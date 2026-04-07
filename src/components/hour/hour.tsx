@@ -3,19 +3,8 @@ type HourProps = {
     label?: string
 }
 
-export const Hour = ({available, label}: HourProps) => {
-    if (!available) {
-        return <div style={{
-            height: '60px',
-            borderBottom: '1px solid gray',
-            width: '100%',
-            backgroundColor: 'blue'
-        }}>{label}</div>
-    }
-
-    return (
-        <div style={{height: '60px', borderBottom: '1px solid gray', width: '100%', backgroundColor: 'darkgray'}}>
-            {label}
-        </div>
-    )
-}
+export const Hour = ({available, label}: HourProps) => (
+    <div className={`h-[60px] border-b border-r border-white w-full ${available ? 'bg-gray-400' : 'bg-blue-500'}`}>
+        {label}
+    </div>
+)
