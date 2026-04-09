@@ -74,8 +74,8 @@ identity key, which would require comparing arrays. The tradeoff is the id is de
 the `hours` array — it does because both are set at the same time in `getInitialSlots`.
 
 **No multi-hour appointment rendering.** Appointments have both `startHour` and `endHour` in the data model, but the
-grid only uses `startHour` to place them. For example, a 2-hour appointment would not visually span two rows, since the
-mock data didn't contain an example like that.
+grid only uses `startHour` to place them. For example, a 2-hour appointment would not visually span two rows, because I
+didn't cover that case since the mock data didn't contain an example like that.
 
 **`weekStart` is derived from `appointments[0].date`.** There is no date picker or navigation. The displayed week is
 always whatever week the mock data covers. Although I made the starting date of the week basically pickable in the code,
