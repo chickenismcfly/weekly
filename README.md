@@ -20,32 +20,52 @@ npm run build
 
 ### `App`
 
-Root component. Fetches appointments via `useAppointments` and handles loading and error states. Derives `weekStart`
-from the first appointment's date and renders the month/year header.
+Root component. Fetches appointments via `useAppointments` and handles loading and error states:
+
+- Renders `WeekSkeleton` while loading and an inline error message on failure.
+- Derives `weekStart` from `appointments[0].date` and formats a month/year label for the sticky header.
+- Owns the full-screen flex layout (fixed header, scrollable body) and passes `appointments` and `weekStart` down to
+  `Week`.
 
 ### `Week`
 
-Owns the slot state. On mount, computes an initial `Slot[]` from the full appointment list — consecutive unbooked hours
-across the whole week are collapsed into a single `collapsed` slot; booked hours each get their own `hour` slot. Renders
-a sticky day-header row and a scrollable grid body with a time gutter on the left.
+Owns the slot state and the overall grid structure:
 
-Exposes `expandSegment(id)` which replaces a `collapsed` slot with individual `hour` slots, identified by the slot's
-`id`.
+- Computes 7 ISO date strings from `weekStart` via `getWeekDates`.
+- Initialises `slots` once with `getInitialSlots`: scans hours 8–20 across all appointments and collapses
+  consecutive unbooked hours into a single `collapsed` slot with a stable `id` (`hours.join('-')`); each booked hour
+  becomes an individual `hour` slot.
+- Renders a day-header row showing each day's abbreviated name and date number.
+- Renders a left time gutter: a 60px AM/PM label for `hour` slots and an 8px spacer for `collapsed` slots.
+- Renders one `Day` column per date, passing pre-filtered appointments and the shared `slots` array.
+- Exposes `expandSegment(id)` which splices a `collapsed` slot in place with its relevant `hour` slots.
 
 ### `Day`
 
-Renders a single column. Iterates the shared `slots` array and delegates each slot to either a thin collapsed bar (
-clickable to expand) or an `Hour` cell. Filters the full appointments list down to its own date.
+Renders a single column in the grid:
+
+- Receives appointments already filtered to its own date (filtered by `Week` before passing down).
+- For each `collapsed` slot: renders a thin 8px clickable bar with a centred horizontal dash; clicking calls
+  `onExpandSegment(id)` to expand it.
+- For each `hour` slot: looks up a matching appointment by `startHour` and renders an `Hour` cell, passing
+  `available` and the appointment `title` as `label`.
 
 ### `Hour`
 
-A 60px tall cell. Empty slots show only the grid border. Booked slots render the appointment title in a left-accented
-block using the theme accent color.
+A 60px tall cell with a bottom border:
+
+- When `available` is `true`: renders an empty cell showing only the grid border.
+- When `available` is `false`: renders an absolute-positioned block with the theme accent background, a 3px left
+  accent border, and the appointment title truncated to one line.
 
 ### `WeekSkeleton` / `HourSkeleton`
 
-Structural skeleton shown during the initial fetch. Mirrors the layout of `Week` so there is no layout shift on
-load.
+Structural skeletons shown during the initial data fetch:
+
+- `WeekSkeleton` mirrors the full `App` + `Week` layout: placeholders appear for the month label, all
+  7 day headers (weekday name + circular date number), the time labels, and every hour cell.
+- `HourSkeleton` is a plain 60px cell with a bottom border and no content, used by `WeekSkeleton` to fill the grid.
+- Together they ensure there is minimal layout shift when real data loads.
 
 ### `useAppointments`
 
@@ -57,8 +77,8 @@ Custom hook that fetches appointments once on mount and exposes `{ appointments,
 
 A discriminated union representing a row in the grid:
 
-- `{ type: 'hour'; hour: number }` — a single hour that may have appointments
-- `{ type: 'collapsed'; hours: number[]; id: string }` — a run of consecutive hours that are free across the entire
+- `{ type: 'hour'; hour: number }`: a single hour that may have appointments
+- `{ type: 'collapsed'; hours: number[]; id: string }`: a run of consecutive hours that are free across the entire
   week, collapsed into one row
 
 ## Tradeoffs
