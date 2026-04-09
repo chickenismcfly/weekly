@@ -1,3 +1,3 @@
 export type Slot =
     | { type: 'hour'; hour: number }
-    | { type: 'segment'; hours: number[] }
+    | { type: 'collapsed'; hours: number[]; id: string }

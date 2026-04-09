@@ -123,10 +123,10 @@ const MOCK_APPOINTMENTS: Appointment[] = [
     },
 ];
 
-const SIMULATED_DELAY_MS = 800;
+const SIMULATED_DELAY_MILLISECONDS = 800;
 
-function delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+function delay(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 /**
@@ -135,6 +135,6 @@ function delay(ms: number): Promise<void> {
  * @returns A promise that resolves to an array of Appointment objects.
  */
 export async function fetchAppointments(): Promise<Appointment[]> {
-    await delay(SIMULATED_DELAY_MS);
+    await delay(SIMULATED_DELAY_MILLISECONDS);
     return structuredClone(MOCK_APPOINTMENTS);
 }

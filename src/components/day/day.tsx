@@ -3,34 +3,34 @@ import type {Slot} from "../week/types.ts";
 import {Hour} from "../hour/hour.tsx";
 
 type DayProps = {
-    date: string
     appointments: Appointment[]
     slots: Slot[]
-    onExpandSegment: (hours: number[]) => void
+    onExpandSegment: (id: string) => void
 }
 
-export const Day = ({date, appointments, slots, onExpandSegment}: DayProps) => {
-    const label = new Date(date).toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
-
-    return (
-        <div className="flex-1">
-            <span className="text-sm font-medium">{label}</span>
-            {slots.map((slot, i) => {
-                if (slot.type === 'segment') {
-                    return (
-                        <div key={i} className="h-1 border-b border-white w-full cursor-pointer"
-                             onClick={() => onExpandSegment(slot.hours)}/>
-                    )
-                }
-                const hourAppointments = appointments.filter(a => a.startHour === slot.hour)
+export const Day = ({appointments, slots, onExpandSegment}: DayProps) => (
+    <div className="flex-1 border-l" style={{borderColor: 'var(--border)'}}>
+        {slots.map((slot) => {
+            if (slot.type === 'collapsed') {
                 return (
-                    <Hour
-                        key={slot.hour}
-                        available={hourAppointments.length === 0}
-                        label={hourAppointments.map(a => a.title).join(', ')}
-                    />
+                    <div
+                        key={slot.id}
+                        className="h-2 border-b flex items-center justify-center cursor-pointer transition-colors"
+                        style={{borderColor: 'var(--border)'}}
+                        onClick={() => onExpandSegment(slot.id)}
+                    >
+                        <div className="w-3 h-px" style={{background: 'var(--border)'}}/>
+                    </div>
                 )
-            })}
-        </div>
-    )
-}
+            }
+            const hourAppointment = appointments.find(appointment => appointment.startHour === slot.hour)
+            return (
+                <Hour
+                    key={slot.hour}
+                    available={!hourAppointment}
+                    label={hourAppointment?.title}
+                />
+            )
+        })}
+    </div>
+)
