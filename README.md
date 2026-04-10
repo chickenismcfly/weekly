@@ -84,21 +84,22 @@ A discriminated union representing a row in the grid:
 ## Tradeoffs
 
 **Slots are computed from the full week, not per-day.** I considered storing this information on day level, but I
-thought that since the criteria list asked for collapsed hours only if they were available during the entire week, I
-thought this information would be better handled as a responsibility of the Week component. With more features, I could
+thought that since the criteria list asked for collapsed hours only if they were available during the entire week, this
+information would be better handled as a responsibility of the Week component. With more features, I could
 imagine it either having to be delegated to the day component eventually or it should probably move into a more scalable
 state management solution which allows the sharing and update of this state between the different components.
 
 **Collapsed segments are identified by a stable `id` (`hours.join('-')`).** This avoids passing `hours[]` around as an
-identity key, which would require comparing arrays. The tradeoff is the id is derived data and must stay in sync with
-the `hours` array — it does because both are set at the same time in `getInitialSlots`.
+identity key (or an array index, khm), which would require comparing arrays. The tradeoff is the id is derived data and
+must stay in sync with the `hours` array — it does because both are set at the same time in `getInitialSlots`.
 
 **No multi-hour appointment rendering.** Appointments have both `startHour` and `endHour` in the data model, but the
-grid only uses `startHour` to place them. For example, a 2-hour appointment would not visually span two rows, because I
-didn't cover that case since the mock data didn't contain an example like that.
+grid only uses `startHour` to place them. Since the mock data didn't cover for example 2 hour long appointments, I
+didn't cover that case for simplicity. Hence, `endHour` is not used.
 
-**`weekStart` is derived from `appointments[0].date`.** There is no date picker or navigation. The displayed week is
-always whatever week the mock data covers. Although I made the starting date of the week basically pickable in the code,
+**`weekStart` is derived from `appointments[0].date`.** There is no date picker or a starting day setting for different
+type of calendars. The displayed week is always whatever week the mock data covers. Although I made the starting date of
+the week basically pickable in the code,
 it doesn't really have any real usage benefit right now. Maybe if paging were implemented to show several weeks of data,
 this prop could be beneficial.
 
